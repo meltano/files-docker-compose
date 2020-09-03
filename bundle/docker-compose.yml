@@ -1,18 +1,42 @@
-version: '3.1'
+version: '3.8'
+
+x-meltano-image:
+  &meltano-image
+  image: meltano/meltano
+
 services:
-  meltano:
-    image: meltano/meltano
-    working_dir: /project
+  meltano-ui:
+    << : *meltano-image
+    restart: unless-stopped
+    expose:
+      - 5000
     volumes:
-    - ./:/project
+      - .:/project
     ports:
-    - '5000:5000'
-    - '5010:5010'
-  warehouse_db:
-    image: postgres:11
-    environment:
-      POSTGRES_DB: warehouse
-      POSTGRES_PASSWORD: warehouse
-      POSTGRES_USER: warehouse
-    ports:
-    - '5502:5432'
+      - 5000:5000
+    command: ui
+
+  # # Uncomment if you are using the Airflow orchestrator, delete otherwise
+  # airflow-webserver:
+  #   << : *meltano-image
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - meltano
+  #   expose:
+  #     - 8080
+  #   volumes:
+  #     - .:/project
+  #   ports:
+  #     - 8080:8080
+  #   command: invoke airflow webserver
+  #
+  # airflow-scheduler:
+  #   << : *meltano-image
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - meltano
+  #   expose:
+  #     - 8793
+  #   volumes:
+  #     - .:/project
+  #   command: invoke airflow scheduler

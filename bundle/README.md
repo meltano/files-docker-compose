@@ -1,43 +1,70 @@
-# Meltano Docker Compose
+# Meltano & Docker Compose
 
-THIS FILE IS INCLUDED FOR CONVENIENCE AND REFERENCE ONLY FEEL FREE TO DELETE IT
+*[This file](https://gitlab.com/meltano/files-docker-compose/-/blob/master/bundle/README.md) has been added to your project for convenience and reference only. Feel free to delete it.*
 
 ## Getting started
 
-Run `docker-compose up -d` to start all the containers in the background
+1. Start the `meltano-ui` service (and any others) in the background:
 
-### Helpful Commands
+    ```bash
+    docker-compose up -d
+    ```
 
-- Run `docker-compose exec meltano-ui /bin/bash` to get a bash terminal inside your meltano container
-- Run `docker-compose exec meltano-ui meltano {some command}` to run a meltano command inside your container
-  - replace {some command} with a command from the [CLI reference](https://meltano.com/docs/command-line-interface.html)
-- Run `docker-compose logs` to see all logs
-- Run `docker-compose logs {service name}` to see logs for a particular service
-  - for example `docker-compose logs meltano-ui` will output the log stream for the meltano-ui service
+1. Open Meltano UI at <http://localhost:5000>.
 
-## Adding services
+### Helpful commands
+
+- `docker-compose exec meltano-ui /bin/bash`: Get a bash shell inside your Meltano container.
+- `docker-compose exec meltano-ui meltano {subcommand}`: Run a [`meltano` CLI command](https://meltano.com/docs/command-line-interface.html) inside your container.
+- `docker-compose logs`: See all logs.
+- `docker-compose logs {service}`: See logs for a particular service, e.g. `meltano-ui`.
+
+## Optional services
+
+If these services are not relevant to you, feel free to delete their commented sections.
 
 ### Airflow
 
-1. Uncomment the airflow services
-2. Uncomment the airflow database volume
-3. Run `docker-compose up -d` to start the airflow containers
+If you are using the [Airflow orchestrator](https://meltano.com/docs/orchestration.html) and would like to run it using Docker Compose, follow these steps:
+
+1. Uncomment the `airflow-webserver` and `airflow-scheduler` services.
+1. Start the new services:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+1. Open the Airflow web interface at <http://localhost:8080>.
 
 ## Production usage
 
+A `docker-compose.prod.yml` file is included that represents a [production-grade](https://meltano.com/docs/production.html) setup of a [containerized Meltano project](https://meltano.com/docs/containerization.html).
+
+If this is not relevant to you, feel free to delete it.
+
 ### Dependencies
 
-The production compose file depends on a Dockerfile being present in the project. Please run `meltano add files docker` to add a Dockerfile to your project if you haven't already done so.
+The production configuration depends on a `Dockerfile` being present in your project.
+
+If you haven't already, add the appropriate `Dockerfile` and `.dockerignore` files to your project by adding the [`docker` file bundle](https://gitlab.com/meltano/files-docker):
+
+```bash
+meltano add files docker
+```
 
 ### Usage
 
-A `docker-compose.prod.yml` file is included for production use. Please ensure you do the following when deploying to production.
+Please ensure you do the following before deploying to production:
 
-1. Change all database passwords (look for "CHANGE ME")
-2. Update the database connection strings to reflect the password changes under `x-meltano-env` and `x-airflow-env`
-3. Include environment variables from .env and your local environment that are needed for production under the `x-meltano-env:` key where it says "Add your meltano .env variables here"
-4. Change the image tag under `x-meltano-image` to something that makes sense for your project
-5. Uncomment the airflow services, network, and volume if needed
-6. Run `docker-compose -f docker-compose.prod.yml up -d` to start the services
+1. If you are using the [Airflow orchestrator](#airflow) and would like to run it using Docker Compose, uncomment the Airflow services, network, and volume. If not, feel free to delete the commented sections.
+1. Change the database password for `meltano-system-db` (and `airflow-metadata-db`): look for `# CHANGE ME`.
+1. Update the database connection URIs under `x-meltano-env` (and `x-airflow-env`) to reflect the changed passwords.
+1. Add any environment variables from `.env` and your local environment that are needed for production under `x-meltano-env`.
+1. Change the image name and tag under `x-meltano-image` to something that makes sense for your project.
+1. Start the services in the background:
 
-If you need to rebuild your image due to changes after it has been deployed run `docker-compose up -d --build`.
+    ```bash
+    docker-compose -f docker-compose.prod.yml up -d
+    ```
+
+If you've made changes to your project and need to rebuild your project-specific image, run `docker-compose -f docker-compose.prod.yml up -d --build`.

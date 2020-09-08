@@ -1,108 +1,104 @@
 version: '3.8'
 
-x-meltano-image:
-  &meltano-image
-  image: meltano-demo-project:dev # Change me to a name:tag that fits the container we will be building
+x-meltano-image: &meltano-image
+  image: meltano-demo-project:dev # Change me to a name and tag that makes sense for your project
   build: .
 
-x-meltano-env:
-  &meltano-env
-  MELTANO_DATABASE_URI: 'postgresql://postgres:meltano@meltano-system-db/meltano'
-  # Add your meltano .env variables here
+x-meltano-env: &meltano-env
+  MELTANO_DATABASE_URI: postgresql://postgres:postgres@meltano-system-db/meltano
+  # Add any additional Meltano configuration environment variables here
 
-# x-airflow-env:
-#   &airflow-env
-#   AIRFLOW__CORE__SQL_ALCHEMY_CONN: 'postgres://postgres:airflow@airflow-metadata-db/airflow'
+# # Uncomment if you are using the Airflow orchestrator, delete otherwise
+# x-airflow-env: &airflow-env
+#   AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres://postgres:postgres@airflow-metadata-db/airflow
+#   AIRFLOW__CORE__EXECUTOR: LocalExecutor
 
 services:
   meltano-ui:
-    << : *meltano-image
-    restart: unless-stopped
-    expose:
-      - 5000
+    <<: *meltano-image
+    command: ui
+    environment:
+      <<: *meltano-env
     volumes:
       - meltano_elt_logs_data:/project/.meltano/logs/elt
-    environment:
-      << : *meltano-env
+    expose:
+      - 5000
     ports:
       - 5000:5000
-    command: ui
     depends_on:
       - meltano-system-db
     networks:
       - meltano
+    restart: unless-stopped
 
-  # Meltano system database
   meltano-system-db:
     image: postgres
-    restart: unless-stopped
-    expose:
-      - 5432
-    volumes:
-      - meltano_postgresql_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: meltano # CHANGE ME
+      POSTGRES_PASSWORD: postgres # CHANGE ME
       POSTGRES_DB: meltano
       PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - meltano_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 5432
     networks:
       - meltano
+    restart: unless-stopped
 
   # # Uncomment if you are using the Airflow orchestrator, delete otherwise
-  # airflow-webserver:
-  #   << : *meltano-image
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - meltano
-  #     - meltano-system-db
-  #     - airflow-metadata-db
-  #   expose:
-  #     - 8080
-  #   environment:
-  #     << : *airflow-env
-  #     << : *meltano-env
-  #   ports:
-  #     - 8080:8080
-  #   command: invoke airflow webserver
-  #   networks:
-  #     - meltano
-  #     - airflow
-  #
   # airflow-scheduler:
-  #   << : *meltano-image
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - meltano
-  #     - meltano-system-db
-  #     - airflow-metadata-db
-  #   expose:
-  #     - 8793
+  #   <<: *meltano-image
+  #   command: invoke airflow scheduler
+  #   environment:
+  #     <<: *meltano-env
+  #     <<: *airflow-env
   #   volumes:
   #     - meltano_elt_logs_data:/project/.meltano/logs/elt
-  #   environment:
-  #     << : *airflow-env
-  #     << : *meltano-env
-  #   command: invoke airflow scheduler
+  #   expose:
+  #     - 8793
+  #   depends_on:
+  #     - meltano-system-db
+  #     - airflow-metadata-db
   #   networks:
   #     - meltano
   #     - airflow
+  #   restart: unless-stopped
   #
-  # # Airflow internal database
+  # airflow-webserver:
+  #   <<: *meltano-image
+  #   command: invoke airflow webserver
+  #   environment:
+  #     <<: *meltano-env
+  #     <<: *airflow-env
+  #   expose:
+  #     - 8080
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - meltano-system-db
+  #     - airflow-metadata-db
+  #   networks:
+  #     - meltano
+  #     - airflow
+  #   restart: unless-stopped
+  #
   # airflow-metadata-db:
   #   image: postgres
-  #   restart: unless-stopped
-  #   expose:
-  #     - 5432
-  #   volumes:
-  #     - airflow_postgresql_data:/var/lib/postgresql/data
   #   environment:
-  #     POSTGRES_PASSWORD: airflow # CHANGE ME
+  #     POSTGRES_PASSWORD: postgres # CHANGE ME
   #     POSTGRES_DB: airflow
   #     PGDATA: /var/lib/postgresql/data/pgdata
+  #   volumes:
+  #     - airflow_postgresql_data:/var/lib/postgresql/data
+  #   expose:
+  #     - 5432
   #   networks:
   #     - airflow
+  #   restart: unless-stopped
 
 networks:
   meltano:
+  # # Uncomment if you are using the Airflow orchestrator, delete otherwise
   # airflow:
 
 volumes:
@@ -110,5 +106,6 @@ volumes:
     driver: local
   meltano_elt_logs_data:
     driver: local
+  # # Uncomment if you are using the Airflow orchestrator, delete otherwise
   # airflow_postgresql_data:
   #   driver: local

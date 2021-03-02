@@ -56,7 +56,7 @@ meltano add files docker
 
 Please ensure you do the following before deploying to production:
 
-1. If you are using the [Airflow orchestrator](#airflow) and would like to run it using Docker Compose, uncomment the Airflow services, network, and volume. If not, feel free to delete the commented sections.
+1. If you are using the [Airflow orchestrator](#airflow) and would like to run it using Docker Compose, uncomment the Airflow services, network, and volume, and add `psycopg2` to `airflow`'s `pip_url` in `meltano.yml` as described in the ["Deployment in Production" guide](https://meltano.com/docs/production.html#airflow-orchestrator). If not, feel free to delete the commented sections.
 1. Change the database password for `meltano-system-db` (and `airflow-metadata-db`): look for `# CHANGE ME`.
 1. Update the database connection URIs under `x-meltano-env` (and `x-airflow-env`) to reflect the changed passwords.
 1. Add any environment variables from `.env` and your local environment that are needed for production under `x-meltano-env`.

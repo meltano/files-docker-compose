@@ -19,6 +19,8 @@ services:
     command: ui
     environment:
       <<: *meltano-env
+      # # Uncomment if you are using the Airflow orchestrator, delete otherwise
+      # <<: *airflow-env
     volumes:
       - meltano_elt_logs_data:/project/.meltano/logs/elt
     expose:

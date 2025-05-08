@@ -7,10 +7,6 @@ services:
   meltano:
     <<: *meltano-image
     command: dragon
-    expose:
-      - 5000
-    ports:
-      - 5000:5000
     restart: unless-stopped
 
   # # Uncomment if you are using the Airflow orchestrator, delete otherwise

@@ -1,14 +1,12 @@
-version: '3.8'
-
 x-meltano-image: &meltano-image
   image: meltano/meltano
   volumes:
     - .:/project
 
 services:
-  meltano-ui:
+  meltano:
     <<: *meltano-image
-    command: ui
+    command: dragon
     expose:
       - 5000
     ports:

@@ -12,10 +12,9 @@
 
 ### Helpful commands
 
-- `docker compose exec meltano-ui /bin/bash`: Get a bash shell inside your Meltano container.
-- `docker compose exec meltano-ui meltano {subcommand}`: Run a [`meltano` CLI command](https://meltano.com/docs/command-line-interface.html) inside your container.
+- `docker compose run meltano {subcommand}`: Run a [`meltano` CLI command](https://meltano.com/docs/command-line-interface.html) inside your container.
 - `docker compose logs`: See all logs.
-- `docker compose logs {service}`: See logs for a particular service, e.g. `meltano-ui`.
+- `docker compose logs {service}`: See logs for a particular service, e.g. `meltano`.
 
 ## Optional services
 

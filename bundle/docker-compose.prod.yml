@@ -1,5 +1,3 @@
-version: '3.8'
-
 x-meltano-image: &meltano-image
   image: meltano-demo-project:dev # Change me to a name and tag that makes sense for your project
   build: .
@@ -14,9 +12,9 @@ x-meltano-env: &meltano-env
 #   AIRFLOW__CORE__EXECUTOR: LocalExecutor
 
 services:
-  meltano-ui:
+  meltano:
     <<: *meltano-image
-    command: ui
+    command: dragon
     environment:
       <<: *meltano-env
       # # Uncomment if you are using the Airflow orchestrator, delete otherwise

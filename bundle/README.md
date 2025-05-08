@@ -4,20 +4,18 @@
 
 ## Getting started
 
-1. Start the `meltano-ui` service (and any others) in the background:
+1. Start the services in the background:
 
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
-
-1. Open Meltano UI at <http://localhost:5000>.
 
 ### Helpful commands
 
-- `docker-compose exec meltano-ui /bin/bash`: Get a bash shell inside your Meltano container.
-- `docker-compose exec meltano-ui meltano {subcommand}`: Run a [`meltano` CLI command](https://meltano.com/docs/command-line-interface.html) inside your container.
-- `docker-compose logs`: See all logs.
-- `docker-compose logs {service}`: See logs for a particular service, e.g. `meltano-ui`.
+- `docker compose exec meltano-ui /bin/bash`: Get a bash shell inside your Meltano container.
+- `docker compose exec meltano-ui meltano {subcommand}`: Run a [`meltano` CLI command](https://meltano.com/docs/command-line-interface.html) inside your container.
+- `docker compose logs`: See all logs.
+- `docker compose logs {service}`: See logs for a particular service, e.g. `meltano-ui`.
 
 ## Optional services
 
@@ -31,7 +29,7 @@ If you are using the [Airflow orchestrator](https://meltano.com/docs/orchestrati
 1. Start the new services:
 
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
 
 1. Open the Airflow web interface at <http://localhost:8080>.
@@ -64,7 +62,7 @@ Please ensure you do the following before deploying to production:
 1. Start the services in the background:
 
     ```bash
-    docker-compose -f docker-compose.prod.yml up -d
+    docker compose -f docker-compose.prod.yml up -d
     ```
 
-If you've made changes to your project and need to rebuild your project-specific image, run `docker-compose -f docker-compose.prod.yml up -d --build`.
+If you've made changes to your project and need to rebuild your project-specific image, run `docker compose -f docker-compose.prod.yml up -d --build`.
